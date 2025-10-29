@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Sistema de Ramais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="chat.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <!-- Input para upload de foto (escondido) -->
+    <input type="file" id="photoUploadChat" accept="image/*" style="display: none;">
+
+    <!-- Tela de Chamada Recebida -->
+    <div id="incomingCall" class="incoming-call-overlay" style="display: none;">
+        <div class="call-box">
+            <div id="callerProfile" class="caller-avatar">AS</div>
+            <h3 id="callerName">Carregando...</h3>
+            <p class="call-text">Chamada Recebida</p>
+            <div class="call-buttons">
+                <button class="answer-btn" onclick="answerCall()">
+                    <i class="fas fa-phone"></i>
+                </button>
+                <button class="reject-btn" onclick="rejectCall()">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles de Chamada Ativa -->
+    <div id="callControls" class="call-controls-overlay" style="display: none;">
+        <div class="call-info">
+            <span id="callStatus">Em chamada</span>
+            <button class="end-call-btn" onclick="endCall()">
+                <i class="fas fa-phone-slash"></i> Encerrar
+            </button>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-left">
+            <button class="btn-back" onclick="goToDashboard()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Voltar
+            </button>
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Chat</h1>
+                    <p>Sistema de Mensagens</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info" onclick="toggleDropdown()">
+                <div id="userAvatarContainer" class="user-avatar">US</div>
+                <div class="user-details">
+                    <h3 id="userName">Carregando...</h3>
+                    <p>Online</p>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="changeProfilePhoto()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Alterar Foto
+                    </div>
+                    <div class="dropdown-item" onclick="viewProfile()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                        </svg>
+                        Meu Perfil
+                    </div>
+                    <div class="dropdown-item" onclick="toggleDarkMode()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+                        </svg>
+                        <span id="darkModeText">Modo Escuro</span>
+                    </div>
+                    <div class="dropdown-item danger" onclick="logout()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+                        </svg>
+                        Sair
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <!-- Sidebar de Contatos -->
+        <div class="contacts-sidebar">
+            <div class="sidebar-header">
+                <h2>Conversas</h2>
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                    </svg>
+                    <input type="text" placeholder="Buscar conversas..." id="searchContacts">
+                </div>
+            </div>
+            
+            <div class="contacts-list" id="contactsList">
+                <!-- Contatos serão carregados via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Área Principal do Chat -->
+        <div class="chat-area">
+            <div class="chat-header" id="chatHeader">
+                <div class="empty-state" id="emptyChatState">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+                    </svg>
+                    <h3>Selecione uma conversa</h3>
+                    <p>Escolha um contato para começar a conversar</p>
+                </div>
+                
+                <div class="chat-header-info" id="activeChatInfo" style="display: none;">
+                    <div class="contact-avatar-wrapper">
+                        <div class="contact-avatar" id="activeChatAvatar">AS</div>
+                        <div class="status-indicator online" id="activeChatStatus"></div>
+                    </div>
+                    <div>
+                        <h3 id="activeChatName">Ana Silva</h3>
+                        <p id="activeChatStatusText">Online</p>
+                    </div>
+                </div>
+                
+                <div class="chat-actions" id="chatActions" style="display: none;">
+                    <button class="action-icon-btn" onclick="makeCall()" title="Ligar">
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                        </svg>
+                    </button>
+                    <button class="action-icon-btn" onclick="startVideoCall()" title="Videochamada">
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>
+                        </svg>
+                    </button>
+                    <button class="action-icon-btn" onclick="showContactInfo()" title="Informações">
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <!-- Mensagens serão carregadas via JavaScript -->
+            </div>
+
+            <div class="message-input-area" id="messageInputArea" style="display: none;">
+                <div class="input-wrapper">
+                    <div class="input-box">
+                        <button class="input-icon-btn" onclick="toggleEmojiPicker()">
+                            <svg viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9 9h.01M15 9h.01"/>
+                            </svg>
+                        </button>
+                        <textarea placeholder="Digite sua mensagem..." id="messageInput" rows="1"></textarea>
+                        <button class="input-icon-btn" onclick="attachFile()">
+                            <svg viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <button class="btn-send" id="sendButton" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Elementos de Áudio (escondidos) -->
+    <audio id="localAudio" autoplay muted style="display: none;"></audio>
+    <audio id="remoteAudio" autoplay style="display: none;"></audio>
+    <audio id="ringtone" src="ringtone.mp3" loop style="display: none;"></audio>
+
+    <script>
+        // ===== CONFIGURAÇÃO DO SOCKET E WEBRTC =====
+        const socket = io();
+        let localStream;
+        let peerConnection;
+        let myName = "";
+        let currentChatUser = null;
+        let remoteSocketId = null;
+        let isInCall = false;
+        let pendingOffer = null;
+        let chatHistories = new Map();
+        let unreadMessages = new Map();
+        let allUsers = [];
+
+        const config = { 
+            iceServers: [{ 
+                urls: "stun:stun.l.google.com:19302" 
+            }] 
+        };
+        const ringtone = document.getElementById("ringtone");
+
+        // ===== SISTEMA DE USUÁRIO E TEMAS =====
+        
+        function getUserKey(key) {
+            const currentUser = localStorage.getItem('currentUser');
+            return currentUser ? `${currentUser}_${key}` : key;
+        }
+
+        function identifyUser() {
+            const session = localStorage.getItem('cloudpbx_session');
+            if (session) {
+                const userData = JSON.parse(session);
+                const userIdentifier = userData.email || userData.nome.replace(/\s+/g, '_').toLowerCase();
+                localStorage.setItem('currentUser', userIdentifier);
+                myName = userData.nome;
+                
+                // Registrar no servidor de chat
+                socket.emit("register", { name: userData.nome });
+            }
+        }
+
+        function loadUserProfile() {
+            const session = localStorage.getItem('cloudpbx_session');
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const userData = JSON.parse(session);
+            document.getElementById('userName').textContent = userData.nome;
+            updateAvatar();
+            applyTheme();
+        }
+
+        function updateAvatar() {
+            const photoUrl = localStorage.getItem(getUserKey('userPhoto'));
+            const avatarContainer = document.getElementById('userAvatarContainer');
+            const userName = document.getElementById('userName').textContent;
+            
+            const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            
+            if (photoUrl) {
+                avatarContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = photoUrl;
+                img.alt = 'Avatar';
+                img.className = 'user-avatar-image';
+                avatarContainer.appendChild(img);
+            } else {
+                avatarContainer.textContent = initials;
+                avatarContainer.className = 'user-avatar';
+            }
+        }
+
+        function changeProfilePhoto() {
+            document.getElementById('photoUploadChat').click();
+        }
+
+        document.getElementById('photoUploadChat').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.size <= 2000000) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const photoUrl = event.target.result;
+                    localStorage.setItem(getUserKey('userPhoto'), photoUrl);
+                    updateAvatar();
+                    showNotification('Foto de perfil atualizada com sucesso!');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Arquivo muito grande. Máximo 2MB.');
+            }
+        });
+
+        function applyTheme() {
+            const theme = localStorage.getItem(getUserKey('colorTheme')) || 'blue';
+            const darkMode = localStorage.getItem(getUserKey('darkMode')) === 'true';
+            
+            document.body.className = '';
+            
+            if (darkMode) {
+                document.body.classList.add('dark-theme');
+                document.getElementById('darkModeText').textContent = 'Modo Claro';
+            } else {
+                document.body.classList.add(`${theme}-theme`);
+                document.getElementById('darkModeText').textContent = 'Modo Escuro';
+            }
+        }
+
+        function toggleDarkMode() {
+            const darkMode = localStorage.getItem(getUserKey('darkMode')) === 'true';
+            localStorage.setItem(getUserKey('darkMode'), !darkMode);
+            applyTheme();
+            showNotification(`Modo ${!darkMode ? 'escuro' : 'claro'} ativado!`);
+        }
+
+        // ===== SISTEMA DE CHAT EM TEMPO REAL =====
+
+        // Receber lista de usuários online
+        socket.on("user-list", users => {
+            allUsers = users.filter(u => u.socketId !== socket.id);
+            loadContacts();
+        });
+
+        // Receber mensagens
+        socket.on("chatMessage", data => {
+            const chatKey = getChatKey(myName, data.from);
+            if (!chatHistories.has(chatKey)) {
+                chatHistories.set(chatKey, []);
+            }
+            
+            const message = {
+                from: data.from,
+                text: data.text,
+                timestamp: new Date().toISOString(),
+                type: 'received'
+            };
+            
+            chatHistories.get(chatKey).push(message);
+            
+            // Atualizar contador de mensagens não lidas
+            if (!currentChatUser || currentChatUser.name !== data.from) {
+                const currentUnread = unreadMessages.get(data.from) || 0;
+                unreadMessages.set(data.from, currentUnread + 1);
+            }
+            
+            // Se estiver no chat correto, exibir a mensagem
+            if (currentChatUser && currentChatUser.name === data.from) {
+                addMessageToChat(data.from, data.text, false);
+                // Marcar como lida
+                unreadMessages.set(data.from, 0);
+            }
+            
+            // Atualizar lista de contatos
+            loadContacts();
+        });
+
+        // Receber histórico do chat
+        socket.on("chat-history", data => {
+            if (!currentChatUser || data.withUser !== currentChatUser.name) return;
+            
+            const chatKey = getChatKey(myName, data.withUser);
+            chatHistories.set(chatKey, data.messages);
+            displayChatHistory(data.messages);
+        });
+
+        // Carregar lista de contatos
+        function loadContacts() {
+            const contactsList = document.getElementById('contactsList');
+            contactsList.innerHTML = '';
+
+            allUsers.forEach(user => {
+                const chatKey = getChatKey(myName, user.name);
+                const history = chatHistories.get(chatKey) || [];
+                const lastMessage = history.length > 0 ? history[history.length - 1] : null;
+                
+                const contactItem = document.createElement('div');
+                contactItem.className = 'contact-item';
+                contactItem.onclick = () => selectChat(user);
+
+                const unreadCount = unreadMessages.get(user.name) || 0;
+                const lastMessageText = lastMessage ? lastMessage.text : 'Inicie uma conversa';
+                const lastMessageTime = lastMessage ? formatTime(lastMessage.timestamp) : '';
+
+                contactItem.innerHTML = `
+                    <div class="contact-avatar-wrapper">
+                        <div class="contact-avatar">${getInitials(user.name)}</div>
+                        <div class="status-indicator online"></div>
+                    </div>
+                    <div class="contact-info">
+                        <h4>${user.name}</h4>
+                        <p>${lastMessageText}</p>
+                    </div>
+                    <div class="contact-meta">
+                        <span class="message-time">${lastMessageTime}</span>
+                        ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
+                    </div>
+                `;
+
+                contactsList.appendChild(contactItem);
+            });
+        }
+
+        // Selecionar chat
+        function selectChat(user) {
+            currentChatUser = user;
+            
+            // Atualizar UI
+            document.getElementById('emptyChatState').style.display = 'none';
+            document.getElementById('activeChatInfo').style.display = 'flex';
+            document.getElementById('chatActions').style.display = 'flex';
+            document.getElementById('messageInputArea').style.display = 'block';
+
+            // Atualizar informações do chat ativo
+            document.getElementById('activeChatName').textContent = user.name;
+            document.getElementById('activeChatAvatar').textContent = getInitials(user.name);
+            document.getElementById('activeChatStatus').className = 'status-indicator online';
+            document.getElementById('activeChatStatusText').textContent = 'Online';
+
+            // Zerar mensagens não lidas
+            unreadMessages.set(user.name, 0);
+            
+            // Carregar mensagens
+            const chatKey = getChatKey(myName, user.name);
+            if (chatHistories.has(chatKey)) {
+                displayChatHistory(chatHistories.get(chatKey));
+            } else {
+                socket.emit("request-chat-history", {
+                    user1: myName,
+                    user2: user.name,
+                    withUser: user.name
+                });
+            }
+            
+            // Atualizar lista de contatos
+            loadContacts();
+        }
+
+        // Exibir histórico do chat
+        function displayChatHistory(messages) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = '';
+
+            messages.forEach(msg => {
+                addMessageToChat(msg.from, msg.text, msg.from === myName, false);
+            });
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Adicionar mensagem ao chat
+        function addMessageToChat(sender, text, isOwn = false, saveToHistory = true) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageGroup = document.createElement('div');
+            messageGroup.className = 'message-group';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isOwn ? 'sent' : 'received'}`;
+
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' + 
+                        now.getMinutes().toString().padStart(2, '0');
+
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${isOwn ? 'EU' : getInitials(sender)}</div>
+                <div class="message-content">
+                    <div class="message-bubble">${text}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+
+            messageGroup.appendChild(messageDiv);
+            messagesContainer.appendChild(messageGroup);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Enviar mensagem
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const text = messageInput.value.trim();
+
+            if (text && currentChatUser) {
+                // Salvar localmente
+                const chatKey = getChatKey(myName, currentChatUser.name);
+                if (!chatHistories.has(chatKey)) {
+                    chatHistories.set(chatKey, []);
+                }
+                
+                const message = {
+                    from: myName,
+                    text: text,
+                    timestamp: new Date().toISOString(),
+                    type: 'sent'
+                };
+                
+                chatHistories.get(chatKey).push(message);
+                
+                // Exibir localmente
+                addMessageToChat(myName, text, true);
+                
+                // Enviar para o destinatário
+                socket.emit("chatMessage", { 
+                    from: myName, 
+                    toSocketId: currentChatUser.socketId,
+                    targetName: currentChatUser.name,
+                    text 
+                });
+                
+                // Limpar input
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                
+                // Atualizar lista de contatos
+                loadContacts();
+            }
+        }
+
+        // ===== SISTEMA DE CHAMADAS WEBRTC =====
+
+        async function initMicrofone() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    } 
+                });
+                document.getElementById("localAudio").srcObject = localStream;
+                return true;
+            } catch (e) {
+                console.warn("Microfone não disponível:", e);
+                showNotification("Microfone não disponível para chamadas");
+                return false;
+            }
+        }
+
+        function createPeerConnection(remoteId) {
+            const pc = new RTCPeerConnection(config);
+            
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, localStream);
+                });
+            }
+
+            pc.onicecandidate = e => {
+                if (e.candidate) {
+                    socket.emit("webrtc-icecandidate", { 
+                        toSocketId: remoteId, 
+                        candidate: e.candidate 
+                    });
+                }
+            };
+
+            pc.ontrack = e => {
+                document.getElementById("remoteAudio").srcObject = e.streams[0];
+            };
+
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === "connected") {
+                    isInCall = true;
+                    document.getElementById("callControls").style.display = 'flex';
+                    document.getElementById("callStatus").textContent = `Em chamada com ${currentChatUser.name}`;
+                } else if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
+                    endCall();
+                }
+            };
+
+            return pc;
+        }
+
+        // Fazer chamada
+        async function makeCall() {
+            if (!currentChatUser) return;
+            
+            if (isInCall) {
+                showNotification("Você já está em chamada!");
+                return;
+            }
+            
+            if (!localStream) {
+                const success = await initMicrofone();
+                if (!success) return;
+            }
+            
+            remoteSocketId = currentChatUser.socketId;
+            
+            try {
+                peerConnection = createPeerConnection(remoteSocketId);
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                
+                socket.emit("webrtc-offer", { 
+                    toSocketId: remoteSocketId, 
+                    fromName: myName, 
+                    sdp: offer 
+                });
+                
+                document.getElementById("callControls").style.display = 'flex';
+                document.getElementById("callStatus").textContent = `Chamando ${currentChatUser.name}...`;
+                
+            } catch (error) {
+                console.error("Erro na chamada:", error);
+                showNotification("Erro ao iniciar chamada");
+            }
+        }
+
+        function startVideoCall() {
+            showNotification("Videochamada em desenvolvimento");
+        }
+
+        // Receber oferta de chamada
+        socket.on("webrtc-offer", async data => {
+            if (isInCall) {
+                socket.emit("webrtc-reject", { toSocketId: data.fromSocketId });
+                return;
+            }
+            
+            remoteSocketId = data.fromSocketId;
+            pendingOffer = data.sdp;
+
+            // Mostrar tela de chamada recebida
+            document.getElementById("callerProfile").textContent = getInitials(data.fromName);
+            document.getElementById("callerName").textContent = data.fromName;
+            document.getElementById("incomingCall").style.display = 'flex';
+            
+            ringtone.play().catch(e => console.log("Ringtone error:", e));
+        });
+
+        // Atender chamada
+        async function answerCall() {
+            if (!localStream) {
+                const success = await initMicrofone();
+                if (!success) {
+                    rejectCall();
+                    return;
+                }
+            }
+            
+            ringtone.pause();
+            document.getElementById("incomingCall").style.display = 'none';
+            
+            try {
+                peerConnection = createPeerConnection(remoteSocketId);
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer));
+                
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                
+                socket.emit("webrtc-answer", { 
+                    toSocketId: remoteSocketId, 
+                    sdp: answer 
+                });
+                
+                isInCall = true;
+                document.getElementById("callControls").style.display = 'flex';
+                document.getElementById("callStatus").textContent = `Em chamada`;
+                
+            } catch (error) {
+                console.error("Erro ao atender:", error);
+                rejectCall();
+            }
+        }
+
+        // Recusar chamada
+        function rejectCall() {
+            ringtone.pause();
+            document.getElementById("incomingCall").style.display = 'none';
+            socket.emit("webrtc-reject", { toSocketId: remoteSocketId });
+            resetCall();
+        }
+
+        // Encerrar chamada
+        function endCall() {
+            socket.emit("webrtc-endcall", { toSocketId: remoteSocketId });
+            resetCall();
+        }
+
+        // Resetar chamada
+        function resetCall() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            isInCall = false;
+            remoteSocketId = null;
+            pendingOffer = null;
+            document.getElementById("callControls").style.display = 'none';
+            document.getElementById("remoteAudio").srcObject = null;
+        }
+
+        // Handlers WebRTC
+        socket.on("webrtc-answer", async data => {
+            if (!peerConnection) return;
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
+        });
+
+        socket.on("webrtc-icecandidate", async data => {
+            if (!peerConnection) return;
+            await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+        });
+
+        socket.on("webrtc-rejected", () => {
+            showNotification("Chamada recusada");
+            resetCall();
+        });
+
+        socket.on("webrtc-endcall", () => {
+            showNotification("Chamada encerrada");
+            resetCall();
+        });
+
+        socket.on("call-ended", () => {
+            showNotification("Chamada encerrada");
+            resetCall();
+        });
+
+        // ===== FUNÇÕES UTILITÁRIAS =====
+
+        function getInitials(name) {
+            const parts = name.split(" ");
+            if (parts.length === 1) return parts[0][0].toUpperCase();
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+
+        function getChatKey(user1, user2) {
+            return [user1, user2].sort().join('_');
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 24 * 60 * 60 * 1000) {
+                return date.getHours().toString().padStart(2, '0') + ':' + 
+                       date.getMinutes().toString().padStart(2, '0');
+            } else {
+                return date.toLocaleDateString('pt-BR');
+            }
+        }
+
+        // ===== FUNÇÕES DE NAVEGAÇÃO =====
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        function viewProfile() {
+            window.location.href = 'perfil.html';
+        }
+
+        function showContactInfo() {
+            if (currentChatUser) {
+                showNotification(`Informações de ${currentChatUser.name}`);
+            }
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                localStorage.removeItem('cloudpbx_session');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
+        }
+
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', function(event) {
+            const userInfo = document.querySelector('.user-info');
+            const dropdown = document.getElementById('dropdownMenu');
+            
+            if (!userInfo.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Notificação
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 2rem;
+                background: #10b981;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+                font-weight: 600;
+                font-size: 14px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Auto-resize textarea
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Enviar mensagem com Enter
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Inicialização
+        window.onload = function() {
+            identifyUser();
+            loadUserProfile();
+            applyTheme();
+            
+            // Adicionar estilos de animação
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOutRight {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                }
+                
+                /* Estilos para chamadas */
+                .incoming-call-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                }
+                
+                .call-controls-overlay {
+                    position: fixed;
+                    bottom: 2rem;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: white;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 999;
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+                
+                .call-box {
+                    background: white;
+                    padding: 3rem;
+                    border-radius: 15px;
+                    text-align: center;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                }
+                
+                .caller-avatar {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background: #2a5298;
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin: 0 auto 1rem;
+                }
+                
+                .call-buttons {
+                    display: flex;
+                    gap: 2rem;
+                    margin-top: 2rem;
+                    justify-content: center;
+                }
+                
+                .answer-btn, .reject-btn {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    border: none;
+                    font-size: 20px;
+                    color: white;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .answer-btn {
+                    background: #28a745;
+                }
+                
+                .reject-btn {
+                    background: #dc3545;
+                }
+                
+                .end-call-btn {
+                    background: #dc3545;
+                    color: white;
+                    border: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+            `;
+            document.head.appendChild(style);
+        };
+    </script>
+</body>
+</html>

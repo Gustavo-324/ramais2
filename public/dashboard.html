@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ramal - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <!-- Input para upload de foto (escondido) -->
+    <input type="file" id="photoUploadDashboard" accept="image/*" style="display: none;">
+
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                </svg>
+            </div>
+            <div class="logo-text">
+                <h1>Ramal</h1>
+                <p>Sistema de Ramais Corporativos</p>
+            </div>
+        </div>
+        <div class="user-section">
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span>Online</span>
+            </div>
+            <div class="user-info" onclick="toggleDropdown()">
+                <div id="userAvatarContainer" class="user-avatar">RC</div>
+                <div class="user-details">
+                    <h3 id="userName">Carregando...</h3>
+                    <p>Administrador</p>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="changeProfilePhoto()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Alterar Foto
+                    </div>
+                    <div class="dropdown-item" onclick="viewProfile()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                        Meu Perfil
+                    </div>
+                    <div class="dropdown-item" onclick="viewSettings()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        Configurações
+                    </div>
+                    <div class="dropdown-item danger" onclick="logout()">
+                        <svg viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                        </svg>
+                        Sair
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="content-area">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon blue">
+                            <svg viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">127</div>
+                    <div class="stat-label">Chamadas Hoje</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon amber">
+                            <svg viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">4:32</div>
+                    <div class="stat-label">Tempo Médio</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon emerald">
+                            <svg viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">23/28</div>
+                    <div class="stat-label">Ramais Ativos</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon rose">
+                            <svg viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 3.75L18 6m0 0l2.25 2.25M18 6l2.25-2.25M18 6l-2.25 2.25m1.5 13.5c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 014.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 00-.38 1.21 12.035 12.035 0 007.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 011.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 01-2.25 2.25h-2.25z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Perdidas</div>
+                </div>
+            </div>
+
+            <div class="extensions-panel">
+                <div class="panel-header">
+                    <h2>Ramais Corporativos</h2>
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <input type="text" placeholder="Buscar ramal ou nome..." id="searchInput">
+                    </div>
+                </div>
+
+                <div id="extensionsList">
+                    <div class="extension-item">
+                        <div class="extension-info">
+                            <div class="extension-avatar">
+                                <div class="avatar-circle">AS</div>
+                                <div class="status-indicator available"></div>
+                            </div>
+                            <div class="extension-details">
+                                <h3>Ana Silva</h3>
+                                <div class="extension-meta">
+                                    <span>Ramal 1001</span>
+                                    <span>•</span>
+                                    <span>Vendas</span>
+                                    <span class="status-badge-inline available">Disponível</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="extension-actions">
+                            <button class="action-btn primary" onclick="makeCall('Ana Silva')">
+                                <svg viewBox="0 0 24 24" class="icon-phone">
+                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="sendMessage('Ana Silva')">
+                                <svg viewBox="0 0 24 24" class="icon-message">
+                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="startVideo('Ana Silva')">
+                                <svg viewBox="0 0 24 24" class="icon-video">
+                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="extension-item">
+                        <div class="extension-info">
+                            <div class="extension-avatar">
+                                <div class="avatar-circle">CM</div>
+                                <div class="status-indicator on-call"></div>
+                            </div>
+                            <div class="extension-details">
+                                <h3>Carlos Mendes</h3>
+                                <div class="extension-meta">
+                                    <span>Ramal 1002</span>
+                                    <span>•</span>
+                                    <span>Suporte</span>
+                                    <span class="status-badge-inline on-call">Em chamada</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="extension-actions">
+                            <button class="action-btn primary" onclick="makeCall('Carlos Mendes')">
+                                <svg viewBox="0 0 24 24" class="icon-phone">
+                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="sendMessage('Carlos Mendes')">
+                                <svg viewBox="0 0 24 24" class="icon-message">
+                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="startVideo('Carlos Mendes')">
+                                <svg viewBox="0 0 24 24" class="icon-video">
+                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="extension-item">
+                        <div class="extension-info">
+                            <div class="extension-avatar">
+                                <div class="avatar-circle">BC</div>
+                                <div class="status-indicator available"></div>
+                            </div>
+                            <div class="extension-details">
+                                <h3>Beatriz Costa</h3>
+                                <div class="extension-meta">
+                                    <span>Ramal 1003</span>
+                                    <span>•</span>
+                                    <span>Marketing</span>
+                                    <span class="status-badge-inline available">Disponível</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="extension-actions">
+                            <button class="action-btn primary" onclick="makeCall('Beatriz Costa')">
+                                <svg viewBox="0 0 24 24" class="icon-phone">
+                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="sendMessage('Beatriz Costa')">
+                                <svg viewBox="0 0 24 24" class="icon-message">
+                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="startVideo('Beatriz Costa')">
+                                <svg viewBox="0 0 24 24" class="icon-video">
+                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="extension-item">
+                        <div class="extension-info">
+                            <div class="extension-avatar">
+                                <div class="avatar-circle">DO</div>
+                                <div class="status-indicator offline"></div>
+                            </div>
+                            <div class="extension-details">
+                                <h3>Daniel Oliveira</h3>
+                                <div class="extension-meta">
+                                    <span>Ramal 1004</span>
+                                    <span>•</span>
+                                    <span>TI</span>
+                                    <span class="status-badge-inline offline">Offline</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="extension-actions">
+                            <button class="action-btn primary" disabled>
+                                <svg viewBox="0 0 24 24" class="icon-phone">
+                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="sendMessage('Daniel Oliveira')">
+                                <svg viewBox="0 0 24 24" class="icon-message">
+                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" disabled>
+                                <svg viewBox="0 0 24 24" class="icon-video">
+                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                    </svg>
+                    Histórico de Chamadas
+                </div>
+
+                <div class="call-item">
+                    <div class="item-header">
+                        <h4>Ana Silva</h4>
+                        <span class="item-time">10:45</span>
+                    </div>
+                    <div class="call-details">
+                        <div class="call-type">
+                            <svg viewBox="0 0 24 24" stroke="#10b981">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                            </svg>
+                            Recebida
+                        </div>
+                        <span class="call-duration">5:32</span>
+                    </div>
+                </div>
+
+                <div class="call-item">
+                    <div class="item-header">
+                        <h4>Carlos Mendes</h4>
+                        <span class="item-time">09:22</span>
+                    </div>
+                    <div class="call-details">
+                        <div class="call-type">
+                            <svg viewBox="0 0 24 24" stroke="#3b82f6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                            </svg>
+                            Realizada
+                        </div>
+                        <span class="call-duration">12:18</span>
+                    </div>
+                </div>
+
+                <div class="call-item">
+                    <div class="item-header">
+                        <h4>Cliente Externo</h4>
+                        <span class="item-time">08:15</span>
+                    </div>
+                    <div class="call-details">
+                        <div class="call-type">
+                            <svg viewBox="0 0 24 24" stroke="#ef4444">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 3.75L18 6m0 0l2.25 2.25M18 6l2.25-2.25M18 6l-2.25 2.25" />
+                            </svg>
+                            Perdida
+                        </div>
+                        <span class="call-duration">0:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                    </svg>
+                    Mensagens Internas
+                </div>
+
+                <div class="message-item unread">
+                    <div class="item-header">
+                        <h4>Ana Silva</h4>
+                        <span class="item-time">11:20</span>
+                    </div>
+                    <p class="message-text">Reunião confirmada para 15h</p>
+                    <span class="unread-badge">Nova mensagem</span>
+                </div>
+
+                <div class="message-item unread">
+                    <div class="item-header">
+                        <h4>Carlos Mendes</h4>
+                        <span class="item-time">10:55</span>
+                    </div>
+                    <p class="message-text">Cliente solicitou retorno urgente</p>
+                    <span class="unread-badge">Nova mensagem</span>
+                </div>
+
+                <div class="message-item">
+                    <div class="item-header">
+                        <h4>Beatriz Costa</h4>
+                        <span class="item-time">09:30</span>
+                    </div>
+                    <p class="message-text">Documentos enviados por e-mail</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-buttons">
+        <button class="fab white" onclick="openSettings()">
+            <svg viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                <circle cx="12" cy="12" r="3" />
+            </svg>
+        </button>
+        <button class="fab blue" onclick="openHelp()">
+            <svg viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Função para obter a chave do usuário atual
+        function getUserKey(key) {
+            const currentUser = localStorage.getItem('currentUser');
+            return currentUser ? `${currentUser}_${key}` : key;
+        }
+
+        // Identificar usuário ao carregar
+        function identifyUser() {
+            const session = localStorage.getItem('cloudpbx_session');
+            if (session) {
+                const userData = JSON.parse(session);
+                const userIdentifier = userData.email || userData.nome.replace(/\s+/g, '_').toLowerCase();
+                localStorage.setItem('currentUser', userIdentifier);
+            }
+        }
+
+        // Função para carregar e sincronizar foto do perfil
+        function loadUserProfile() {
+            const session = localStorage.getItem('cloudpbx_session');
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const userData = JSON.parse(session);
+            document.getElementById('userName').textContent = userData.nome;
+            
+            // Carregar foto do perfil
+            updateAvatar();
+            applyTheme();
+        }
+
+        // Função para atualizar o avatar em todos os lugares
+        function updateAvatar() {
+            const photoUrl = localStorage.getItem(getUserKey('userPhoto'));
+            const avatarContainer = document.getElementById('userAvatarContainer');
+            const userName = document.getElementById('userName').textContent;
+            
+            // Gerar iniciais para o avatar
+            const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            
+            if (photoUrl) {
+                // Se houver foto, criar elemento img
+                avatarContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = photoUrl;
+                img.alt = 'Avatar';
+                img.className = 'user-avatar-image';
+                avatarContainer.appendChild(img);
+            } else {
+                // Se não houver foto, mostrar iniciais
+                avatarContainer.textContent = initials;
+                avatarContainer.className = 'user-avatar';
+            }
+        }
+
+        // Função para abrir o seletor de foto
+        function changeProfilePhoto() {
+            document.getElementById('photoUploadDashboard').click();
+        }
+
+        // Configurar o evento de upload de foto
+        document.getElementById('photoUploadDashboard').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.size <= 2000000) { // 2MB limit
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const photoUrl = event.target.result;
+                    localStorage.setItem(getUserKey('userPhoto'), photoUrl);
+                    updateAvatar();
+                    showNotification('Foto de perfil atualizada com sucesso!');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Arquivo muito grande. Máximo 2MB.');
+            }
+        });
+
+        // Aplicar tema ao carregar a página
+        function applyTheme() {
+            const theme = localStorage.getItem(getUserKey('colorTheme')) || 'blue';
+            const darkMode = localStorage.getItem(getUserKey('darkMode')) === 'true';
+            
+            document.body.className = ''; // Reset classes
+            
+            if (darkMode) {
+                document.body.classList.add('dark-theme');
+            }
+            
+            document.body.classList.add(`${theme}-theme`);
+        }
+
+        // Função para mostrar notificação
+        function showNotification(message) {
+            // Remove notificação existente
+            const existingNotification = document.querySelector('.dashboard-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'dashboard-notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 2rem;
+                background: #10b981;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+                font-weight: 600;
+                font-size: 14px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Adicionar estilos de animação para as notificações
+        const notificationStyles = document.createElement('style');
+        notificationStyles.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(notificationStyles);
+
+        // Verificar se usuário está logado e aplicar tema
+        window.onload = function() {
+            identifyUser();
+            loadUserProfile();
+            
+            // Recarregar foto quando a página receber foco (voltando de outra página)
+            window.addEventListener('focus', function() {
+                loadUserProfile();
+            });
+        };
+
+        // Toggle dropdown do perfil
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
+        }
+
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', function(event) {
+            const userInfo = document.querySelector('.user-info');
+            const dropdown = document.getElementById('dropdownMenu');
+            
+            if (!userInfo.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Função de logout
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                localStorage.removeItem('cloudpbx_session');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Funções do menu dropdown
+        function viewProfile() {
+           window.location.href = 'perfil.html';
+        }
+
+        function viewSettings() {
+            window.location.href = 'configuracao.html';
+        }
+
+        // Busca de ramais
+        const searchInput = document.getElementById('searchInput');
+        const extensionItems = document.querySelectorAll('.extension-item');
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            extensionItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Funções de ações dos ramais
+        function makeCall(name) {
+           window.location.href = 'call.html';
+        }
+
+        function sendMessage(name) {
+              window.location.href = 'chat.html';
+        }
+
+        function startVideo(name) {
+            window.location.href = 'call.html';
+        }
+
+        // Funções dos botões flutuantes
+        function openSettings() {
+          window.location.href = 'configuracao.html';
+        }
+
+        function openHelp() {
+            alert('Central de Ajuda - Em desenvolvimento');
+        }
+
+
+        // Aplicar modo escuro
+function applyDarkMode() {
+    const darkMode = localStorage.getItem(getUserKey('darkMode')) === 'true';
+    const theme = localStorage.getItem(getUserKey('colorTheme')) || 'blue';
+    
+    document.body.className = ''; // Reset classes
+    
+    if (darkMode) {
+        document.body.classList.add('dark-theme');
+    } else {
+        document.body.classList.add(`${theme}-theme`);
+    }
+}
+
+// Atualize o window.onload para incluir applyDarkMode():
+window.onload = function() {
+    identifyUser();
+    loadUserProfile();
+    applyDarkMode();
+    
+    // Recarregar quando a página receber foco
+    window.addEventListener('focus', function() {
+        loadUserProfile();
+        applyDarkMode();
+    });
+};
+
+    </script>
+</body>
+</html>

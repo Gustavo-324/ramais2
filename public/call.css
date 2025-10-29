@@ -1,0 +1,190 @@
+/* Estilos para emoji picker */
+.emoji-picker {
+    position: absolute;
+    bottom: 80px;
+    left: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    padding: 1rem;
+    z-index: 1000;
+    display: none;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.emoji-picker.show {
+    display: block;
+}
+
+.emoji-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e1e5ee;
+}
+
+.emoji-categories {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.emoji-category-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.emoji-category-btn.active,
+.emoji-category-btn:hover {
+    background: #e6f0ff;
+}
+
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.25rem;
+}
+
+.emoji-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.emoji-btn:hover {
+    background: #e6f0ff;
+}
+
+/* Estilos para avatares com imagem */
+.user-avatar-image,
+.contact-avatar-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Estilos para arquivos nas mensagens */
+.file-message {
+    background: #f8f9fa;
+    border: 1px solid #e1e5ee;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    max-width: 300px;
+}
+
+.file-message-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.file-icon {
+    width: 40px;
+    height: 40px;
+    background: #2a5298;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.file-details {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    word-break: break-word;
+}
+
+.file-size {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.download-btn {
+    background: #2a5298;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.download-btn:hover {
+    background: #1e3c72;
+}
+
+/* Preview de arquivo no input */
+.file-preview {
+    background: #f8f9fa;
+    border: 1px solid #e1e5ee;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-preview-icon {
+    width: 40px;
+    height: 40px;
+    background: #2a5298;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.file-preview-info {
+    flex: 1;
+}
+
+.file-preview-info h5 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.file-preview-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.file-preview-remove {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+}
+
+.file-preview-remove:hover {
+    background: #ffe6e6;
+}
