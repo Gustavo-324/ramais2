@@ -365,7 +365,7 @@
             }
         }
 
-        // ===== SISTEMA MOBILE WHATSAPP =====
+        // ===== SISTEMA MOBILE WHATSAPP CORRIGIDO =====
         function isMobile() {
             return window.innerWidth <= 768;
         }
@@ -374,10 +374,18 @@
             currentChatUser = user;
             
             if (isMobile()) {
-                // Modo mobile - transição WhatsApp
+                // Modo mobile - esconder lista e mostrar chat
                 document.querySelector('.contacts-sidebar').classList.add('hidden');
                 document.querySelector('.chat-area').classList.add('active');
                 document.getElementById('chatHeaderMobile').style.display = 'flex';
+                
+                // Esconder empty state no mobile
+                document.getElementById('emptyChatState').style.display = 'none';
+                document.getElementById('activeChatInfo').style.display = 'none';
+                document.getElementById('chatActions').style.display = 'none';
+                
+                // Mostrar área de input no mobile
+                document.getElementById('messageInputArea').style.display = 'block';
                 
                 // Atualizar header mobile
                 document.getElementById('mobileChatName').textContent = user.name;
@@ -425,6 +433,13 @@
                 document.querySelector('.contacts-sidebar').classList.remove('hidden');
                 document.querySelector('.chat-area').classList.remove('active');
                 document.getElementById('chatHeaderMobile').style.display = 'none';
+                
+                // Restaurar empty state
+                document.getElementById('emptyChatState').style.display = 'flex';
+                document.getElementById('activeChatInfo').style.display = 'none';
+                document.getElementById('chatActions').style.display = 'none';
+                document.getElementById('messageInputArea').style.display = 'none';
+                
                 currentChatUser = null;
                 
                 // Fechar emoji picker se estiver aberto
@@ -482,6 +497,100 @@
                     item.style.display = 'none';
                 }
             });
+        }
+
+        // ===== SISTEMA DE ARQUIVOS CORRIGIDO =====
+        function attachFile() {
+            // Criar input de arquivo dinamicamente
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.id = 'fileUpload';
+            fileInput.style.display = 'none';
+            fileInput.accept = '*/*';
+            fileInput.onchange = handleFileSelect;
+            document.body.appendChild(fileInput);
+            
+            fileInput.click();
+            
+            // Remover o input após uso
+            fileInput.addEventListener('change', function() {
+                setTimeout(() => {
+                    if (document.body.contains(fileInput)) {
+                        document.body.removeChild(fileInput);
+                    }
+                }, 1000);
+            });
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Verificar tamanho (10MB máximo)
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('Arquivo muito grande. Máximo 10MB.');
+                return;
+            }
+
+            currentFile = file;
+            showFilePreview(file);
+        }
+
+        function showFilePreview(file) {
+            let filePreview = document.getElementById('filePreview');
+            
+            if (!filePreview) {
+                filePreview = document.createElement('div');
+                filePreview.id = 'filePreview';
+                filePreview.className = 'file-preview';
+                filePreview.innerHTML = `
+                    <div class="file-preview-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/>
+                        </svg>
+                    </div>
+                    <div class="file-preview-info">
+                        <h5 id="fileName">${file.name}</h5>
+                        <p id="fileSize">${formatFileSize(file.size)}</p>
+                    </div>
+                    <button class="file-preview-remove" onclick="removeFile()" type="button">
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                `;
+                
+                const messageInputArea = document.getElementById('messageInputArea');
+                if (messageInputArea) {
+                    messageInputArea.insertBefore(filePreview, messageInputArea.firstChild);
+                }
+            } else {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = formatFileSize(file.size);
+                filePreview.style.display = 'flex';
+            }
+        }
+
+        function removeFile() {
+            currentFile = null;
+            const filePreview = document.getElementById('filePreview');
+            if (filePreview) {
+                filePreview.style.display = 'none';
+            }
+            
+            // Limpar input file
+            const fileInput = document.getElementById('fileUpload');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
         // ===== FUNÇÕES EXISTENTES =====
@@ -739,9 +848,9 @@
                         </div>
                         <div class="message-file-info">
                             <h5>${fileData.name}</h5>
-                            <p>${formatFileSize(fileData.size)}</p>
+                            <p>${formatFileSize(fileData.size)} • ${fileData.type || 'Arquivo'}</p>
                         </div>
-                        <a href="${fileData.url}" download="${fileData.name}" class="download-btn">
+                        <a href="${fileData.url}" download="${fileData.name}" class="download-btn" target="_blank">
                             Baixar
                         </a>
                     </div>
@@ -770,6 +879,12 @@
                 sendFileMessage();
             } else if (text && currentChatUser) {
                 sendTextMessage(text);
+            } else if (!text && !currentFile) {
+                showNotification('Digite uma mensagem ou selecione um arquivo');
+                return;
+            } else if (!currentChatUser) {
+                showNotification('Selecione um contato para enviar mensagem');
+                return;
             }
         }
 
@@ -806,7 +921,12 @@
         }
 
         function sendFileMessage() {
-            if (!currentFile || !currentChatUser) return;
+            if (!currentFile || !currentChatUser) {
+                showNotification('Selecione um contato para enviar o arquivo');
+                return;
+            }
+
+            showNotification('Enviando arquivo...');
 
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -842,7 +962,13 @@
                 
                 removeFile();
                 loadContacts();
+                showNotification('Arquivo enviado com sucesso!');
             };
+            
+            reader.onerror = function() {
+                showNotification('Erro ao ler o arquivo');
+            };
+            
             reader.readAsDataURL(currentFile);
         }
 
@@ -977,7 +1103,21 @@
             identifyUser();
             loadUserProfile();
             applyTheme();
+            
+            // Configurar layout inicial para mobile
+            if (isMobile()) {
+                setupMobileLayout();
+            }
         });
+
+        function setupMobileLayout() {
+            // Garantir que no mobile só a lista de contatos seja mostrada inicialmente
+            document.querySelector('.contacts-sidebar').classList.remove('hidden');
+            document.querySelector('.chat-area').classList.remove('active');
+            document.getElementById('chatHeaderMobile').style.display = 'none';
+            document.getElementById('emptyChatState').style.display = 'flex';
+            document.getElementById('messageInputArea').style.display = 'none';
+        }
 
         // ===== FUNÇÕES DE NAVEGAÇÃO =====
         function goToDashboard() {
@@ -1042,6 +1182,11 @@
             identifyUser();
             loadUserProfile();
             applyTheme();
+            
+            // Configurar layout mobile se necessário
+            if (isMobile()) {
+                setupMobileLayout();
+            }
         };
     </script>
 </body>
