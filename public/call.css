@@ -1,190 +1,256 @@
-/* Estilos para emoji picker */
-.emoji-picker {
-    position: absolute;
-    bottom: 80px;
-    left: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    padding: 1rem;
-    z-index: 1000;
-    display: none;
-    width: 300px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.emoji-picker.show {
-    display: block;
-}
-
-.emoji-picker-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e1e5ee;
-}
-
-.emoji-categories {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-}
-
-.emoji-category-btn {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 5px;
-    transition: background 0.2s;
-}
-
-.emoji-category-btn.active,
-.emoji-category-btn:hover {
-    background: #e6f0ff;
-}
-
-.emoji-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 0.25rem;
-}
-
-.emoji-btn {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 5px;
-    transition: background 0.2s;
-}
-
-.emoji-btn:hover {
-    background: #e6f0ff;
-}
-
-/* Estilos para avatares com imagem */
-.user-avatar-image,
-.contact-avatar-image {
+/* call.css - Sistema de Chamadas */
+.call-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+}
+
+.call-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.caller-info {
+    margin-bottom: 30px;
+}
+
+.caller-avatar {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
+    margin: 0 auto 15px;
+    background: linear-gradient(135deg, #5DADE2 0%, #3b82f6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+}
+
+.caller-avatar img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
-/* Estilos para arquivos nas mensagens */
-.file-message {
-    background: #f8f9fa;
-    border: 1px solid #e1e5ee;
+.caller-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.call-status {
+    font-size: 16px;
+    color: #6b7280;
+}
+
+.call-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.call-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.call-btn.accept {
+    background: #10b981;
+    color: white;
+}
+
+.call-btn.reject {
+    background: #ef4444;
+    color: white;
+}
+
+.call-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.call-btn:active {
+    transform: scale(0.95);
+}
+
+.call-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Controles de chamada ativa */
+.call-controls {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    gap: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.control-btn.end-call {
+    background: #ef4444;
+    color: white;
+}
+
+.control-btn:hover {
+    transform: scale(1.05);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+/* Video containers */
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 9000;
+}
+
+.local-video {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    height: 150px;
     border-radius: 10px;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    max-width: 300px;
+    border: 2px solid white;
+    z-index: 9001;
 }
 
-.file-message-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+.remote-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.file-icon {
-    width: 40px;
-    height: 40px;
-    background: #2a5298;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
+/* Tema escuro para chamadas */
+.dark-theme .call-container {
+    background: #1e293b;
+    color: #f1f5f9;
 }
 
-.file-details {
-    flex: 1;
+.dark-theme .caller-name {
+    color: #f1f5f9;
 }
 
-.file-name {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    word-break: break-word;
+.dark-theme .call-status {
+    color: #cbd5e1;
 }
 
-.file-size {
-    font-size: 0.8rem;
-    color: #666;
+.dark-theme .call-controls {
+    background: rgba(30, 41, 59, 0.95);
 }
 
-.download-btn {
-    background: #2a5298;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    text-decoration: none;
-    display: inline-block;
+.dark-theme .control-btn {
+    background: #334155;
+    color: #cbd5e1;
 }
 
-.download-btn:hover {
-    background: #1e3c72;
-}
-
-/* Preview de arquivo no input */
-.file-preview {
-    background: #f8f9fa;
-    border: 1px solid #e1e5ee;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.file-preview-icon {
-    width: 40px;
-    height: 40px;
-    background: #2a5298;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.file-preview-info {
-    flex: 1;
-}
-
-.file-preview-info h5 {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.file-preview-info p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.file-preview-remove {
-    background: none;
-    border: none;
-    color: #dc3545;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 4px;
-}
-
-.file-preview-remove:hover {
-    background: #ffe6e6;
+/* Responsividade */
+@media (max-width: 768px) {
+    .call-container {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    .caller-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 20px;
+    }
+    
+    .caller-name {
+        font-size: 20px;
+    }
+    
+    .call-buttons {
+        gap: 15px;
+    }
+    
+    .call-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .call-controls {
+        bottom: 20px;
+        padding: 15px;
+    }
+    
+    .control-btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .local-video {
+        width: 150px;
+        height: 112px;
+        bottom: 15px;
+        right: 15px;
+    }
 }

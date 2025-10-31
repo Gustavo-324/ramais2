@@ -6,8 +6,11 @@
     <title>Chat - Sistema de Ramais</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="call.css">
+    <link rel="stylesheet" href="meeting.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
+
 </head>
 <body>
     <!-- Input para upload de foto (escondido) -->
@@ -81,6 +84,12 @@
                         </svg>
                         Meu Perfil
                     </div>
+                    <div class="dropdown-item" onclick="openMeetingModal()">
+    <svg viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+    </svg>
+    Salas de Reunião
+</div>
                     <div class="dropdown-item" onclick="toggleDarkMode()">
                         <svg viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
@@ -210,6 +219,56 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para criar/entrar em salas -->
+<div id="roomModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Salas de Reunião</h3>
+            <button class="close-btn" onclick="closeRoomModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchRoomTab('create')">Criar Sala</button>
+                <button class="tab-btn" onclick="switchRoomTab('join')">Entrar em Sala</button>
+            </div>
+            
+            <div id="createRoomTab" class="tab-content active">
+                <input type="text" id="roomName" placeholder="Nome da sala" class="form-input">
+                <button onclick="createRoom()" class="btn primary">Criar Sala</button>
+            </div>
+            
+            <div id="joinRoomTab" class="tab-content">
+                <input type="text" id="roomCode" placeholder="Código da sala" class="form-input">
+                <button onclick="joinRoom()" class="btn primary">Entrar na Sala</button>
+            </div>
+            
+            <div id="activeRooms" class="active-rooms">
+                <h4>Salas Ativas</h4>
+                <div id="roomsList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interface da sala de reunião -->
+<div id="roomInterface" class="room-interface" style="display: none;">
+    <div class="room-header">
+        <h3 id="roomTitle">Sala de Reunião</h3>
+        <button onclick="leaveRoom()" class="btn secondary">Sair da Sala</button>
+    </div>
+    <div class="room-participants">
+        <h4>Participantes</h4>
+        <div id="participantsList"></div>
+    </div>
+    <div class="room-chat">
+        <div id="roomMessages" class="messages-container"></div>
+        <div class="message-input">
+            <input type="text" id="roomMessageInput" placeholder="Digite sua mensagem...">
+            <button onclick="sendRoomMessage()" class="btn primary">Enviar</button>
+        </div>
+    </div>
+</div>
 
     <!-- Elementos de Áudio (escondidos) -->
     <audio id="localAudio" autoplay muted style="display: none;"></audio>
@@ -1188,6 +1247,14 @@
                 setupMobileLayout();
             }
         };
+
+
+
+
+        
     </script>
+    <script src="room.js"></script>
+
+    <script src="call.js"></script>
 </body>
 </html>

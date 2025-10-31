@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ramal - Dashboard</title>
+    <title>Ramal - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-     <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
     <!-- Input para upload de foto (escondido) -->
@@ -77,7 +77,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="stat-value">127</div>
+                    <div class="stat-value" id="callsToday">0</div>
                     <div class="stat-label">Chamadas Hoje</div>
                 </div>
 
@@ -89,7 +89,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="stat-value">4:32</div>
+                    <div class="stat-value" id="avgCallTime">0:00</div>
                     <div class="stat-label">Tempo Médio</div>
                 </div>
 
@@ -101,7 +101,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="stat-value">23/28</div>
+                    <div class="stat-value" id="activeUsers">0/0</div>
                     <div class="stat-label">Ramais Ativos</div>
                 </div>
 
@@ -113,7 +113,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="stat-value">3</div>
+                    <div class="stat-value" id="missedCalls">0</div>
                     <div class="stat-label">Perdidas</div>
                 </div>
             </div>
@@ -130,145 +130,7 @@
                 </div>
 
                 <div id="extensionsList">
-                    <div class="extension-item">
-                        <div class="extension-info">
-                            <div class="extension-avatar">
-                                <div class="avatar-circle">AS</div>
-                                <div class="status-indicator available"></div>
-                            </div>
-                            <div class="extension-details">
-                                <h3>Ana Silva</h3>
-                                <div class="extension-meta">
-                                    <span>Ramal 1001</span>
-                                    <span>•</span>
-                                    <span>Vendas</span>
-                                    <span class="status-badge-inline available">Disponível</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="extension-actions">
-                            <button class="action-btn primary" onclick="makeCall('Ana Silva')">
-                                <svg viewBox="0 0 24 24" class="icon-phone">
-                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" onclick="sendMessage('Ana Silva')">
-                                <svg viewBox="0 0 24 24" class="icon-message">
-                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" onclick="startVideo('Ana Silva')">
-                                <svg viewBox="0 0 24 24" class="icon-video">
-                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="extension-item">
-                        <div class="extension-info">
-                            <div class="extension-avatar">
-                                <div class="avatar-circle">CM</div>
-                                <div class="status-indicator on-call"></div>
-                            </div>
-                            <div class="extension-details">
-                                <h3>Carlos Mendes</h3>
-                                <div class="extension-meta">
-                                    <span>Ramal 1002</span>
-                                    <span>•</span>
-                                    <span>Suporte</span>
-                                    <span class="status-badge-inline on-call">Em chamada</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="extension-actions">
-                            <button class="action-btn primary" onclick="makeCall('Carlos Mendes')">
-                                <svg viewBox="0 0 24 24" class="icon-phone">
-                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" onclick="sendMessage('Carlos Mendes')">
-                                <svg viewBox="0 0 24 24" class="icon-message">
-                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" onclick="startVideo('Carlos Mendes')">
-                                <svg viewBox="0 0 24 24" class="icon-video">
-                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="extension-item">
-                        <div class="extension-info">
-                            <div class="extension-avatar">
-                                <div class="avatar-circle">BC</div>
-                                <div class="status-indicator available"></div>
-                            </div>
-                            <div class="extension-details">
-                                <h3>Beatriz Costa</h3>
-                                <div class="extension-meta">
-                                    <span>Ramal 1003</span>
-                                    <span>•</span>
-                                    <span>Marketing</span>
-                                    <span class="status-badge-inline available">Disponível</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="extension-actions">
-                            <button class="action-btn primary" onclick="makeCall('Beatriz Costa')">
-                                <svg viewBox="0 0 24 24" class="icon-phone">
-                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" onclick="sendMessage('Beatriz Costa')">
-                                <svg viewBox="0 0 24 24" class="icon-message">
-                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" onclick="startVideo('Beatriz Costa')">
-                                <svg viewBox="0 0 24 24" class="icon-video">
-                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="extension-item">
-                        <div class="extension-info">
-                            <div class="extension-avatar">
-                                <div class="avatar-circle">DO</div>
-                                <div class="status-indicator offline"></div>
-                            </div>
-                            <div class="extension-details">
-                                <h3>Daniel Oliveira</h3>
-                                <div class="extension-meta">
-                                    <span>Ramal 1004</span>
-                                    <span>•</span>
-                                    <span>TI</span>
-                                    <span class="status-badge-inline offline">Offline</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="extension-actions">
-                            <button class="action-btn primary" disabled>
-                                <svg viewBox="0 0 24 24" class="icon-phone">
-                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" onclick="sendMessage('Daniel Oliveira')">
-                                <svg viewBox="0 0 24 24" class="icon-message">
-                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn secondary" disabled>
-                                <svg viewBox="0 0 24 24" class="icon-video">
-                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+                    <!-- Ramais serão carregados dinamicamente -->
                 </div>
             </div>
         </div>
@@ -281,53 +143,8 @@
                     </svg>
                     Histórico de Chamadas
                 </div>
-
-                <div class="call-item">
-                    <div class="item-header">
-                        <h4>Ana Silva</h4>
-                        <span class="item-time">10:45</span>
-                    </div>
-                    <div class="call-details">
-                        <div class="call-type">
-                            <svg viewBox="0 0 24 24" stroke="#10b981">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                            </svg>
-                            Recebida
-                        </div>
-                        <span class="call-duration">5:32</span>
-                    </div>
-                </div>
-
-                <div class="call-item">
-                    <div class="item-header">
-                        <h4>Carlos Mendes</h4>
-                        <span class="item-time">09:22</span>
-                    </div>
-                    <div class="call-details">
-                        <div class="call-type">
-                            <svg viewBox="0 0 24 24" stroke="#3b82f6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                            </svg>
-                            Realizada
-                        </div>
-                        <span class="call-duration">12:18</span>
-                    </div>
-                </div>
-
-                <div class="call-item">
-                    <div class="item-header">
-                        <h4>Cliente Externo</h4>
-                        <span class="item-time">08:15</span>
-                    </div>
-                    <div class="call-details">
-                        <div class="call-type">
-                            <svg viewBox="0 0 24 24" stroke="#ef4444">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 3.75L18 6m0 0l2.25 2.25M18 6l2.25-2.25M18 6l-2.25 2.25" />
-                            </svg>
-                            Perdida
-                        </div>
-                        <span class="call-duration">0:00</span>
-                    </div>
+                <div id="callHistoryList">
+                    <!-- Histórico será carregado dinamicamente -->
                 </div>
             </div>
 
@@ -338,31 +155,20 @@
                     </svg>
                     Mensagens Internas
                 </div>
-
-                <div class="message-item unread">
-                    <div class="item-header">
-                        <h4>Ana Silva</h4>
-                        <span class="item-time">11:20</span>
-                    </div>
-                    <p class="message-text">Reunião confirmada para 15h</p>
-                    <span class="unread-badge">Nova mensagem</span>
+                <div id="messagesList">
+                    <!-- Mensagens serão carregadas dinamicamente -->
                 </div>
+            </div>
 
-                <div class="message-item unread">
-                    <div class="item-header">
-                        <h4>Carlos Mendes</h4>
-                        <span class="item-time">10:55</span>
-                    </div>
-                    <p class="message-text">Cliente solicitou retorno urgente</p>
-                    <span class="unread-badge">Nova mensagem</span>
+            <div class="sidebar-section">
+                <div class="sidebar-header">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                    </svg>
+                    Salas Ativas
                 </div>
-
-                <div class="message-item">
-                    <div class="item-header">
-                        <h4>Beatriz Costa</h4>
-                        <span class="item-time">09:30</span>
-                    </div>
-                    <p class="message-text">Documentos enviados por e-mail</p>
+                <div id="activeRoomsList">
+                    <!-- Salas ativas serão carregadas dinamicamente -->
                 </div>
             </div>
         </div>
@@ -383,13 +189,545 @@
     </div>
 
     <script>
-        // Função para obter a chave do usuário atual
+        // Sistema de sincronização do dashboard
+        class DashboardSync {
+            constructor() {
+                this.socket = io();
+                this.unreadMessages = new Map();
+                this.allUsers = [];
+                this.init();
+            }
+
+            init() {
+                this.setupSocketListeners();
+                this.loadRealTimeData();
+                this.setupEventListeners();
+            }
+
+            setupSocketListeners() {
+                // Atualizar lista de usuários online
+                this.socket.on("user-list", (users) => {
+                    this.allUsers = users;
+                    this.updateOnlineUsers(users);
+                    this.updateExtensionsList(users);
+                });
+
+                // Receber notificação de nova mensagem
+                this.socket.on("chatMessage", (data) => {
+                    this.handleNewMessage(data);
+                });
+
+                // Receber notificações do dashboard
+                this.socket.on("dashboard-notification", (data) => {
+                    this.handleDashboardNotification(data);
+                });
+
+                // Atualizar dados do dashboard
+                this.socket.on("dashboard-data", (data) => {
+                    this.updateDashboardStats(data);
+                });
+
+                // Sincronizar chamadas
+                this.socket.on("webrtc-offer", (data) => {
+                    this.updateCallHistory({
+                        type: 'incoming_call',
+                        from: data.fromName,
+                        timestamp: new Date().toISOString()
+                    });
+                });
+
+                this.socket.on("webrtc-answer", (data) => {
+                    this.updateCallHistory({
+                        type: 'answered_call',
+                        timestamp: new Date().toISOString()
+                    });
+                });
+
+                this.socket.on("webrtc-reject", (data) => {
+                    this.updateCallHistory({
+                        type: 'rejected_call',
+                        timestamp: new Date().toISOString()
+                    });
+                });
+
+                this.socket.on("webrtc-endcall", (data) => {
+                    this.updateCallHistory({
+                        type: 'ended_call',
+                        timestamp: new Date().toISOString()
+                    });
+                });
+
+                // Registrar usuário no dashboard
+                const session = localStorage.getItem('cloudpbx_session');
+                if (session) {
+                    const userData = JSON.parse(session);
+                    this.socket.emit("register", { name: userData.nome });
+                }
+            }
+
+            setupEventListeners() {
+                // Busca de ramais
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        this.filterExtensions(e.target.value);
+                    });
+                }
+
+                // Atualizar dados a cada 30 segundos
+                setInterval(() => {
+                    this.loadRealTimeData();
+                }, 30000);
+            }
+
+            updateOnlineUsers(users) {
+                const onlineCount = users.filter(u => u.online).length;
+                const totalCount = users.length;
+                
+                // Atualizar estatística de ramais ativos
+                document.getElementById('activeUsers').textContent = `${onlineCount}/${totalCount}`;
+            }
+
+            updateExtensionsList(users) {
+                const extensionsList = document.getElementById('extensionsList');
+                if (!extensionsList) return;
+
+                extensionsList.innerHTML = '';
+
+                // Filtrar para não mostrar o próprio usuário
+                const otherUsers = users.filter(user => user.name !== this.getCurrentUserName());
+                
+                otherUsers.forEach((user, index) => {
+                    const extensionItem = document.createElement('div');
+                    extensionItem.className = 'extension-item';
+                    
+                    const statusClass = user.online ? 'available' : 'offline';
+                    const statusText = user.online ? 'Disponível' : 'Offline';
+                    const ramalNumber = 1000 + index + 1;
+                    const department = this.getUserDepartment(user.name);
+
+                    extensionItem.innerHTML = `
+                        <div class="extension-info">
+                            <div class="extension-avatar">
+                                <div class="avatar-circle">${this.getInitials(user.name)}</div>
+                                <div class="status-indicator ${statusClass}"></div>
+                            </div>
+                            <div class="extension-details">
+                                <h3>${user.name}</h3>
+                                <div class="extension-meta">
+                                    <span>Ramal ${ramalNumber}</span>
+                                    <span>•</span>
+                                    <span>${department}</span>
+                                    <span class="status-badge-inline ${statusClass}">${statusText}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="extension-actions">
+                            <button class="action-btn primary" onclick="makeCallToUser(${JSON.stringify(user).replace(/"/g, '&quot;')})" ${!user.online ? 'disabled' : ''}>
+                                <svg viewBox="0 0 24 24" class="icon-phone">
+                                    <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="sendMessageToUser(${JSON.stringify(user).replace(/"/g, '&quot;')})">
+                                <svg viewBox="0 0 24 24" class="icon-message">
+                                    <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn secondary" onclick="startVideoCallToUser(${JSON.stringify(user).replace(/"/g, '&quot;')})" ${!user.online ? 'disabled' : ''}>
+                                <svg viewBox="0 0 24 24" class="icon-video">
+                                    <path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+
+                    if (user.avatar) {
+                        const avatarElement = extensionItem.querySelector('.avatar-circle');
+                        this.updateAvatarElement(avatarElement, user.name, user.avatar);
+                    }
+
+                    extensionsList.appendChild(extensionItem);
+                });
+            }
+
+            getCurrentUserName() {
+                const session = localStorage.getItem('cloudpbx_session');
+                if (session) {
+                    const userData = JSON.parse(session);
+                    return userData.nome;
+                }
+                return '';
+            }
+
+            filterExtensions(searchTerm) {
+                const extensionItems = document.querySelectorAll('.extension-item');
+                const searchLower = searchTerm.toLowerCase().trim();
+                
+                extensionItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(searchLower)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            handleNewMessage(data) {
+                // Não mostrar notificação se a mensagem for do próprio usuário
+                if (data.from === this.getCurrentUserName()) return;
+                
+                // Incrementar contador de mensagens não lidas
+                const currentUnread = this.unreadMessages.get(data.from) || 0;
+                this.unreadMessages.set(data.from, currentUnread + 1);
+                
+                // Atualizar sidebar de mensagens
+                this.updateMessagesSidebar(data);
+                
+                // Mostrar notificação
+                this.showMessageNotification(data);
+            }
+
+            updateMessagesSidebar(data) {
+                const messagesList = document.getElementById('messagesList');
+                if (!messagesList) return;
+
+                // Criar ou atualizar item de mensagem
+                let messageItem = messagesList.querySelector(`[data-user="${data.from}"]`);
+                
+                if (!messageItem) {
+                    messageItem = document.createElement('div');
+                    messageItem.className = 'message-item unread';
+                    messageItem.setAttribute('data-user', data.from);
+                    
+                    messageItem.innerHTML = `
+                        <div class="item-header">
+                            <h4>${data.from}</h4>
+                            <span class="item-time">${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <p class="message-text">${data.text || 'Nova mensagem'}</p>
+                        <span class="unread-badge">Nova</span>
+                    `;
+                    
+                    messageItem.onclick = () => this.openChatWithUser(data.from);
+                    messagesList.appendChild(messageItem);
+                } else {
+                    // Atualizar mensagem existente
+                    messageItem.querySelector('.message-text').textContent = data.text || 'Nova mensagem';
+                    messageItem.querySelector('.item-time').textContent = 
+                        new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    messageItem.classList.add('unread');
+                }
+
+                // Manter apenas as 5 mensagens mais recentes
+                const allMessages = messagesList.querySelectorAll('.message-item');
+                if (allMessages.length > 5) {
+                    allMessages[allMessages.length - 1].remove();
+                }
+            }
+
+            handleDashboardNotification(data) {
+                switch (data.type) {
+                    case 'new_call':
+                        this.updateCallHistory(data);
+                        break;
+                    case 'room_created':
+                        this.updateActiveRooms(data);
+                        break;
+                }
+            }
+
+            updateCallHistory(callData) {
+                const callHistoryList = document.getElementById('callHistoryList');
+                if (!callHistoryList) return;
+
+                const callItem = document.createElement('div');
+                callItem.className = 'call-item';
+                
+                let callType, callIcon, strokeColor, contact, duration;
+                
+                switch (callData.type) {
+                    case 'incoming_call':
+                        callType = 'Recebida';
+                        callIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />';
+                        strokeColor = '#3b82f6';
+                        contact = callData.from || 'Usuário';
+                        duration = '0:00';
+                        break;
+                        
+                    case 'outgoing_call':
+                        callType = 'Realizada';
+                        callIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />';
+                        strokeColor = '#10b981';
+                        contact = callData.to || 'Usuário';
+                        duration = '0:00';
+                        break;
+                        
+                    case 'answered_call':
+                        callType = 'Atendida';
+                        callIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />';
+                        strokeColor = '#10b981';
+                        contact = callData.from || 'Usuário';
+                        duration = callData.duration || '0:00';
+                        break;
+                        
+                    case 'rejected_call':
+                        callType = 'Rejeitada';
+                        callIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />';
+                        strokeColor = '#ef4444';
+                        contact = callData.from || 'Usuário';
+                        duration = '0:00';
+                        break;
+                        
+                    case 'ended_call':
+                        callType = 'Encerrada';
+                        callIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />';
+                        strokeColor = '#6b7280';
+                        contact = callData.from || 'Usuário';
+                        duration = callData.duration || '0:00';
+                        break;
+                        
+                    default:
+                        callType = 'Chamada';
+                        callIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />';
+                        strokeColor = '#3b82f6';
+                        contact = callData.from || 'Usuário';
+                        duration = '0:00';
+                }
+                
+                callItem.innerHTML = `
+                    <div class="item-header">
+                        <h4>${contact}</h4>
+                        <span class="item-time">${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div class="call-details">
+                        <div class="call-type">
+                            <svg viewBox="0 0 24 24" stroke="${strokeColor}">
+                                ${callIcon}
+                            </svg>
+                            ${callType}
+                        </div>
+                        <span class="call-duration">${duration}</span>
+                    </div>
+                `;
+
+                // Adicionar no início da lista
+                callHistoryList.insertBefore(callItem, callHistoryList.firstChild);
+                
+                // Atualizar estatísticas
+                this.updateCallStats(callData.type);
+                
+                // Manter apenas as 5 chamadas mais recentes
+                const allCalls = callHistoryList.querySelectorAll('.call-item');
+                if (allCalls.length > 5) {
+                    allCalls[allCalls.length - 1].remove();
+                }
+            }
+
+            updateCallStats(callType) {
+                const callsTodayElement = document.getElementById('callsToday');
+                const missedCallsElement = document.getElementById('missedCalls');
+                
+                if (callsTodayElement) {
+                    const currentCalls = parseInt(callsTodayElement.textContent) || 0;
+                    callsTodayElement.textContent = currentCalls + 1;
+                }
+                
+                if (missedCallsElement && (callType === 'rejected_call' || callType === 'ended_call')) {
+                    const currentMissed = parseInt(missedCallsElement.textContent) || 0;
+                    missedCallsElement.textContent = currentMissed + 1;
+                }
+            }
+
+            updateActiveRooms(roomData) {
+                const activeRoomsList = document.getElementById('activeRoomsList');
+                if (!activeRoomsList) return;
+
+                const roomItem = document.createElement('div');
+                roomItem.className = 'message-item';
+                
+                roomItem.innerHTML = `
+                    <div class="item-header">
+                        <h4>${roomData.roomName}</h4>
+                        <span class="item-time">Agora</span>
+                    </div>
+                    <p class="message-text">Criada por ${roomData.creator}</p>
+                `;
+
+                activeRoomsList.insertBefore(roomItem, activeRoomsList.firstChild);
+
+                // Manter apenas as 3 salas mais recentes
+                const allRooms = activeRoomsList.querySelectorAll('.message-item');
+                if (allRooms.length > 3) {
+                    allRooms[allRooms.length - 1].remove();
+                }
+            }
+
+            updateDashboardStats(data) {
+                if (data.callsToday !== undefined) {
+                    document.getElementById('callsToday').textContent = data.callsToday;
+                }
+                if (data.missedCalls !== undefined) {
+                    document.getElementById('missedCalls').textContent = data.missedCalls;
+                }
+                if (data.activeUsers !== undefined) {
+                    document.getElementById('activeUsers').textContent = `${data.onlineUsers}/${data.totalUsers}`;
+                }
+                
+                // Calcular tempo médio de chamada
+                if (data.recentCalls && data.recentCalls.length > 0) {
+                    const totalDuration = data.recentCalls.reduce((sum, call) => sum + (call.duration || 0), 0);
+                    const avgDuration = totalDuration / data.recentCalls.length;
+                    const minutes = Math.floor(avgDuration / 60);
+                    const seconds = Math.floor(avgDuration % 60);
+                    document.getElementById('avgCallTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }
+
+            showMessageNotification(data) {
+                this.showDashboardNotification(`Nova mensagem de ${data.from}`);
+            }
+
+            showDashboardNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'dashboard-notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 2rem;
+                    background: #10b981;
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease;
+                    font-weight: 600;
+                    font-size: 14px;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+
+            loadRealTimeData() {
+                // Carregar dados iniciais do servidor
+                this.socket.emit('get-dashboard-data');
+                
+                // Carregar histórico de chamadas via API
+                fetch('/api/call-history')
+                    .then(response => response.json())
+                    .then(calls => {
+                        this.updateCallHistoryList(calls);
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar histórico de chamadas:', error);
+                    });
+            }
+
+            updateCallHistoryList(calls) {
+                const callHistoryList = document.getElementById('callHistoryList');
+                if (!callHistoryList) return;
+
+                callHistoryList.innerHTML = '';
+
+                calls.slice(0, 5).forEach(call => {
+                    const callItem = document.createElement('div');
+                    callItem.className = 'call-item';
+                    
+                    const callType = call.type === 'outgoing' ? 'Realizada' : 'Recebida';
+                    const strokeColor = call.answered ? '#10b981' : '#ef4444';
+                    const duration = call.duration ? this.formatDuration(call.duration) : '0:00';
+                    
+                    callItem.innerHTML = `
+                        <div class="item-header">
+                            <h4>${call.from}</h4>
+                            <span class="item-time">${new Date(call.timestamp).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <div class="call-details">
+                            <div class="call-type">
+                                <svg viewBox="0 0 24 24" stroke="${strokeColor}">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                                </svg>
+                                ${callType} ${call.answered ? '' : '(Não atendida)'}
+                            </div>
+                            <span class="call-duration">${duration}</span>
+                        </div>
+                    `;
+
+                    callHistoryList.appendChild(callItem);
+                });
+            }
+
+            // Funções utilitárias
+            getInitials(name) {
+                return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            }
+
+            getUserDepartment(name) {
+                const departments = ['Vendas', 'Suporte', 'Marketing', 'TI', 'Financeiro', 'RH'];
+                const hash = name.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+                return departments[hash % departments.length];
+            }
+
+            formatDuration(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+
+            updateAvatarElement(element, userName, avatar) {
+                if (avatar) {
+                    element.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = avatar;
+                    img.alt = 'Avatar';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.borderRadius = '50%';
+                    img.style.objectFit = 'cover';
+                    element.appendChild(img);
+                } else {
+                    element.textContent = this.getInitials(userName);
+                }
+            }
+
+            openChatWithUser(userName) {
+                window.location.href = `chat.html?user=${encodeURIComponent(userName)}`;
+            }
+        }
+
+        // Inicializar dashboard
+        let dashboardSync;
+
+        // Funções globais
+        function makeCallToUser(user) {
+            if (window.makeCallToUser && typeof window.makeCallToUser === 'function') {
+                window.makeCallToUser(user);
+            } else {
+                dashboardSync.showDashboardNotification(`Chamando ${user.name}...`);
+                // Em um ambiente real, isso iniciaria uma chamada WebRTC
+            }
+        }
+
+        function sendMessageToUser(user) {
+            window.location.href = `chat.html?user=${encodeURIComponent(user.name)}`;
+        }
+
+        function startVideoCallToUser(user) {
+            dashboardSync.showDashboardNotification(`Videochamada com ${user.name} em desenvolvimento`);
+        }
+
+        // Sistema de temas e perfil
         function getUserKey(key) {
             const currentUser = localStorage.getItem('currentUser');
             return currentUser ? `${currentUser}_${key}` : key;
         }
 
-        // Identificar usuário ao carregar
         function identifyUser() {
             const session = localStorage.getItem('cloudpbx_session');
             if (session) {
@@ -399,7 +737,6 @@
             }
         }
 
-        // Função para carregar e sincronizar foto do perfil
         function loadUserProfile() {
             const session = localStorage.getItem('cloudpbx_session');
             if (!session) {
@@ -415,7 +752,6 @@
             applyTheme();
         }
 
-        // Função para atualizar o avatar em todos os lugares
         function updateAvatar() {
             const photoUrl = localStorage.getItem(getUserKey('userPhoto'));
             const avatarContainer = document.getElementById('userAvatarContainer');
@@ -439,29 +775,10 @@
             }
         }
 
-        // Função para abrir o seletor de foto
         function changeProfilePhoto() {
             document.getElementById('photoUploadDashboard').click();
         }
 
-        // Configurar o evento de upload de foto
-        document.getElementById('photoUploadDashboard').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file && file.size <= 2000000) { // 2MB limit
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const photoUrl = event.target.result;
-                    localStorage.setItem(getUserKey('userPhoto'), photoUrl);
-                    updateAvatar();
-                    showNotification('Foto de perfil atualizada com sucesso!');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert('Arquivo muito grande. Máximo 2MB.');
-            }
-        });
-
-        // Aplicar tema ao carregar a página
         function applyTheme() {
             const theme = localStorage.getItem(getUserKey('colorTheme')) || 'blue';
             const darkMode = localStorage.getItem(getUserKey('darkMode')) === 'true';
@@ -470,42 +787,92 @@
             
             if (darkMode) {
                 document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.add(`${theme}-theme`);
             }
-            
-            document.body.classList.add(`${theme}-theme`);
         }
 
-        // Função para mostrar notificação
-        function showNotification(message) {
-            // Remove notificação existente
-            const existingNotification = document.querySelector('.dashboard-notification');
-            if (existingNotification) {
-                existingNotification.remove();
+        function applyDarkMode() {
+            const darkMode = localStorage.getItem(getUserKey('darkMode')) === 'true';
+            const theme = localStorage.getItem(getUserKey('colorTheme')) || 'blue';
+            
+            document.body.className = ''; // Reset classes
+            
+            if (darkMode) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.add(`${theme}-theme`);
             }
+        }
 
-            const notification = document.createElement('div');
-            notification.className = 'dashboard-notification';
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 2rem;
-                background: #10b981;
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 10000;
-                animation: slideInRight 0.3s ease;
-                font-weight: 600;
-                font-size: 14px;
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
+        // Inicialização quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            identifyUser();
+            loadUserProfile();
+            applyDarkMode();
+            
+            // Inicializar sistema de sincronização
+            dashboardSync = new DashboardSync();
+            
+            // Configurar upload de foto
+            const photoUpload = document.getElementById('photoUploadDashboard');
+            if (photoUpload) {
+                photoUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file && file.size <= 2000000) { // 2MB limit
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const photoUrl = event.target.result;
+                            localStorage.setItem(getUserKey('userPhoto'), photoUrl);
+                            updateAvatar();
+                            dashboardSync.showDashboardNotification('Foto de perfil atualizada com sucesso!');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        alert('Arquivo muito grande. Máximo 2MB.');
+                    }
+                });
+            }
+        });
 
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
+        // Funções do menu dropdown
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
+        }
+
+        function viewProfile() {
+           window.location.href = 'perfil.html';
+        }
+
+        function viewSettings() {
+            window.location.href = 'configuracao.html';
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                localStorage.removeItem('cloudpbx_session');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', function(event) {
+            const userInfo = document.querySelector('.user-info');
+            const dropdown = document.getElementById('dropdownMenu');
+            
+            if (!userInfo.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Funções dos botões flutuantes
+        function openSettings() {
+          window.location.href = 'configuracao.html';
+        }
+
+        function openHelp() {
+            dashboardSync.showDashboardNotification('Central de Ajuda - Em desenvolvimento');
         }
 
         // Adicionar estilos de animação para as notificações
@@ -533,118 +900,6 @@
             }
         `;
         document.head.appendChild(notificationStyles);
-
-        // Verificar se usuário está logado e aplicar tema
-        window.onload = function() {
-            identifyUser();
-            loadUserProfile();
-            
-            // Recarregar foto quando a página receber foco (voltando de outra página)
-            window.addEventListener('focus', function() {
-                loadUserProfile();
-            });
-        };
-
-        // Toggle dropdown do perfil
-        function toggleDropdown() {
-            const dropdown = document.getElementById('dropdownMenu');
-            dropdown.classList.toggle('show');
-        }
-
-        // Fechar dropdown ao clicar fora
-        document.addEventListener('click', function(event) {
-            const userInfo = document.querySelector('.user-info');
-            const dropdown = document.getElementById('dropdownMenu');
-            
-            if (!userInfo.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-
-        // Função de logout
-        function logout() {
-            if (confirm('Deseja realmente sair?')) {
-                localStorage.removeItem('cloudpbx_session');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Funções do menu dropdown
-        function viewProfile() {
-           window.location.href = 'perfil.html';
-        }
-
-        function viewSettings() {
-            window.location.href = 'configuracao.html';
-        }
-
-        // Busca de ramais
-        const searchInput = document.getElementById('searchInput');
-        const extensionItems = document.querySelectorAll('.extension-item');
-
-        searchInput.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            extensionItems.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-
-        // Funções de ações dos ramais
-        function makeCall(name) {
-           window.location.href = 'call.html';
-        }
-
-        function sendMessage(name) {
-              window.location.href = 'chat.html';
-        }
-
-        function startVideo(name) {
-            window.location.href = 'call.html';
-        }
-
-        // Funções dos botões flutuantes
-        function openSettings() {
-          window.location.href = 'configuracao.html';
-        }
-
-        function openHelp() {
-            alert('Central de Ajuda - Em desenvolvimento');
-        }
-
-
-        // Aplicar modo escuro
-function applyDarkMode() {
-    const darkMode = localStorage.getItem(getUserKey('darkMode')) === 'true';
-    const theme = localStorage.getItem(getUserKey('colorTheme')) || 'blue';
-    
-    document.body.className = ''; // Reset classes
-    
-    if (darkMode) {
-        document.body.classList.add('dark-theme');
-    } else {
-        document.body.classList.add(`${theme}-theme`);
-    }
-}
-
-// Atualize o window.onload para incluir applyDarkMode():
-window.onload = function() {
-    identifyUser();
-    loadUserProfile();
-    applyDarkMode();
-    
-    // Recarregar quando a página receber foco
-    window.addEventListener('focus', function() {
-        loadUserProfile();
-        applyDarkMode();
-    });
-};
-
     </script>
 </body>
 </html>
